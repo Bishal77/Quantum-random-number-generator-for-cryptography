@@ -70,14 +70,10 @@ qrng-hackathon/
 ├── README.md
 ├── LICENSE.md
 ├── requirements.txt
-├── qrng/
-│   ├── circuit.py
-│   ├── runner.py
-│   └── mitigation.py
-├── notebooks/
-│   └── demo_qrng.ipynb
-└── tests/
-    └── test_qrng.py
+└── qrng/
+    ├── circuit.py
+    └── runner.py
+
 
 
 ## 📜 License
