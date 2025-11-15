@@ -61,8 +61,7 @@ print("Random number:", result)
 
 ## 📚 Suggested Resources
 - Basics of Quantum Information  
-- Quantum Magic Eight Ball  
-- Qiskit Fall Fest 2024 Notebook 1  
+- Quantum Magic Eight Ball    
 - Error Mitigation and Suppression Techniques Documentation
 
 ## 📂 Project Structure
