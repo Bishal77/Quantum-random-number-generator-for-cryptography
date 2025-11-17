@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>QRNG Demo</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Quantum RNG + AES Demo</h1>
+      <form id="demo-form">
+        <label
+          >Key bits: <input name="key_bits" type="number" value="128"
+        /></label>
+        <label
+          >Qubits per shot: <input name="n_qubits" type="number" value="4"
+        /></label>
+        <label>Shots: <input name="shots" type="number" value="1" /></label>
+        <label
+          >Unbiased (Von Neumann):
+          <input name="unbiased" type="checkbox" checked
+        /></label>
+        <label
+          >Message: <input name="message" type="text" value="hello"
+        /></label>
+        <button type="submit">Run Demo</button>
+      </form>
+
+      <section id="result" class="hidden">
+        <h2>Result</h2>
+        <pre id="result-json"></pre>
+      </section>
+    </main>
+
+    <script>
+      document
+        .getElementById("demo-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const form = e.target;
+          const data = {
+            key_bits: Number(form.key_bits.value),
+            n_qubits: Number(form.n_qubits.value),
+            shots: Number(form.shots.value),
+            unbiased: form.unbiased.checked,
+            message: form.message.value || "hello",
+          };
+
+          const res = await fetch("/run", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          });
+          const json = await res.json();
+          document.getElementById("result-json").textContent = JSON.stringify(
+            json,
+            null,
+            2
+          );
+          document.getElementById("result").classList.remove("hidden");
+        });
+    </script>
+  </body>
+</html>
