@@ -1,18 +1,21 @@
 # Core quantum computing framework
-qiskit==1.2.0
+qiskit>=0.43.0
 
 # Simulation backend
-qiskit-aer==0.15.1
+qiskit-aer>=0.14.0
 
-# Visualization and plotting
-matplotlib==3.9.0
+# Cryptography
+pycryptodome>=3.18.0
 
 # Numerical operations
-numpy==1.26.4
+numpy>=1.24
+
+# Visualization and plotting
+matplotlib>=3.8.0
 
 # Jupyter notebooks (for demos and hackathon presentations)
-jupyter==1.0.0
-notebook==7.2.0
+jupyter>=1.0.0
+notebook>=7.0.0
 
 # Testing framework
-pytest==8.2.0
+pytest>=8.0.0

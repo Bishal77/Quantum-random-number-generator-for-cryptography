@@ -1,42 +1,57 @@
-# qrng/runner.py
-from qiskit_aer import AerSimulator
-from qiskit import transpile
-from qiskit.visualization import plot_histogram
-import random
+"""High-level QRNG runner utilities.
 
-from qrng.circuit import build_qrng
+Provides functions to run a Hadamard circuit and collect random bits.
+The fast-path (``use_prob_sampling``) can be used with simulators to
+sample directly from the statevector probabilities for improved
+throughput when many shots are required.
+"""
 
-def run_qrng(num_outcomes: int, shots: int = 1, visualize: bool = False):
+from typing import List
+
+from .circuit import build_hadamard_circuit, run_circuit_and_get_counts
+from .utils import bits_from_counts, von_neumann_unbias
+
+
+def run_qrng_once(n_qubits: int, shots: int = 1, use_prob_sampling: bool = False) -> List[str]:
+    """Run one Hadamard circuit and return measured bitstrings.
+
+    Returns a list of bitstrings (one per shot) in MSB->LSB order.
     """
-    Run the Quantum Random Number Generator circuit.
+    qc = build_hadamard_circuit(n_qubits, measure=True)
+    counts = run_circuit_and_get_counts(qc, shots=shots, use_prob_sampling=use_prob_sampling)
+    return bits_from_counts(counts)
 
-    Args:
-        num_outcomes (int): Number of possible random outcomes (n).
-        shots (int): Number of times to run the circuit.
-        visualize (bool): If True, show histogram of results.
 
-    Returns:
-        int: A random number between 0 and num_outcomes-1.
+def generate_random_bits(
+    target_bits: int,
+    n_qubits: int = 5,
+    shots_per_call: int = 1,
+    unbiased: bool = True,
+    use_prob_sampling: bool = False,
+) -> str:
+    """Generate at least ``target_bits`` random bits and return exact length.
+
+    The generator builds a single circuit and reuses a cached transpiled
+    version to reduce overhead across repeated calls.
     """
-    # Build the circuit
-    qc, k = build_qrng(num_outcomes)
+    collected: List[str] = []
+    qc = build_hadamard_circuit(n_qubits, measure=True)
 
-    # Use Aer simulator
-    simulator = AerSimulator()
-    compiled_circuit = transpile(qc, simulator)
+    while len("".join(collected)) < target_bits:
+        counts = run_circuit_and_get_counts(qc, shots=shots_per_call, use_prob_sampling=use_prob_sampling)
+        measured_list = bits_from_counts(counts)
+        raw = "".join(measured_list)
 
-    # Run the circuit
-    result = simulator.run(compiled_circuit, shots=shots).result()
-    counts = result.get_counts()
+        if unbiased:
+            extracted = von_neumann_unbias(raw)
+            if extracted:
+                collected.append(extracted)
+        else:
+            collected.append(raw)
 
-    if visualize:
-        plot_histogram(counts).show()
+    return ("".join(collected))[:target_bits]
 
-    # Convert bitstrings to integers
-    outcomes = [int(bitstring, 2) for bitstring in counts.keys()]
 
-    # Filter to valid outcomes (0 to num_outcomes-1)
-    valid_outcomes = [o for o in outcomes if o < num_outcomes]
-
-    # Pick one random outcome from the measurement results
-    return random.choice(valid_outcomes)
+def random_int_from_bits(bitstr: str) -> int:
+    """Convert a binary string to an integer value."""
+    return int(bitstr, 2)
