@@ -161,8 +161,7 @@ bits = generate_random_bits(target_bits=256, n_qubits=4, shots_per_call=1)
 
 1. **Read Full Documentation**: See `README.md`
 2. **Explore Code**: Check out `qrng/` modules
-3. **Contribute**: See `CONTRIBUTING.md`
-4. **Try Advanced Features**: Use `qrng/analysis.py` for quality metrics
+3. **Try Advanced Features**: Use `qrng/analysis.py` for quality metrics
 
 ## 🎯 Key Concepts
 
